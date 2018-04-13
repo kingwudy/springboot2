@@ -1,0 +1,49 @@
+package springboot2.demo;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import springboot2.demo.filter.MdcFilter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+@SpringBootApplication
+public class Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+    @Bean
+    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+        return args -> {
+
+            System.out.println("Let's inspect the beans provided by Spring Boot:");
+
+            String[] beanNames = ctx.getBeanDefinitionNames();
+            Arrays.sort(beanNames);
+            for (String beanName : beanNames) {
+//                System.out.println(beanName);
+            }
+            System.out.println("beanNames=" + beanNames.length);
+
+        };
+    }
+
+    @Bean
+    public FilterRegistrationBean MdcFilter() {
+        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+        MdcFilter timeFilter = new MdcFilter();
+        filterRegistrationBean.setFilter(timeFilter);
+        List<String> urls = new ArrayList<>();
+        urls.add("/*");
+        filterRegistrationBean.setUrlPatterns(urls);
+        return filterRegistrationBean;
+    }
+
+}
